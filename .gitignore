@@ -1,0 +1,19 @@
+# .NET
+bin/
+obj/
+.vs/
+*.user
+*.suo
+TestResults/
+*.trx
+*.coverage*
+
+# Node
+node_modules/
+dist/
+coverage/
+
+# OS/IDE
+.DS_Store
+Thumbs.db
+.vscode/
