@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shop.Web.Options;
 using Shop.Domain.Entities;
 using Shop.Web.Dto.Order;
-using Shop.Web.Options;
 using Shop.Web.Services;
 
 namespace Shop.Web.Controllers

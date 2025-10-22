@@ -5,8 +5,10 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.EntityFrameworkCore;
 using Shop.Repositories.UnitsOfWork.Interfaces;
+using Shop.Web;
 using Shop.Web.Options;
 using Shop.Web.Services;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,38 +36,27 @@ builder.Services.AddSingleton<IOrderNumberGenerator, DefaultOrderNumberGenerator
 
 builder.Services.AddSingleton(sp =>
 {
-    var cs = builder.Configuration.GetConnectionString("AzureBlob");
-    return new BlobServiceClient(cs);
+    DefaultAzureCredential credential = new DefaultAzureCredential(options);
+
+    string blobServiceEndpoint = $"https://{storageAccountName}.blob.core.windows.net";
+
+    return new BlobServiceClient(new Uri(blobServiceEndpoint), credential);
 });
 
 builder.Services.AddSingleton<IBlobUrlGenerator, AzureBlobService>();
+builder.Services.AddTransient<DataSeeder>();
 
 
-DefaultAzureCredential credential = new DefaultAzureCredential(options);
+//string containerName = "shopimagesblob";
 
-string blobServiceEndpoint = $"https://{storageAccountName}.blob.core.windows.net";
+//BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
 
-BlobServiceClient blobServiceClient = new BlobServiceClient(new Uri(blobServiceEndpoint), credential);
+//bool exists = await containerClient.ExistsAsync();
 
-string containerName = "shopimagesblob";
-
-BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-
-bool exists = await containerClient.ExistsAsync();
-
-if(!exists)
-{
-    await blobServiceClient.CreateBlobContainerAsync(containerName);
-}
-
-string blobName = "heic1501a.jpg";
-BlobClient blobClient = containerClient.GetBlobClient(blobName);
-await using var upload = File.OpenRead(@"C:\Users\AlesWirt\Work\pet-projects\shop-app\backend\src\data\heic1501a.jpg");
-
-await blobClient.UploadAsync(upload, new BlobUploadOptions
-{
-    HttpHeaders = new BlobHttpHeaders { ContentType = "image/jpeg" }
-});
+//if(!exists)
+//{
+//    await blobServiceClient.CreateBlobContainerAsync(containerName);
+//}
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -96,7 +87,6 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-builder.Services.AddScoped<IShopUnitOfWork, Shop.Repositories.UnitsOfWork.ShopUnitOfWork>();
 
 app.UseHttpsRedirection();
 app.MapGet("/", () => "E-shop API running");
@@ -105,4 +95,7 @@ app.MapGet("/products", (ShopDbContext context) =>
     
     return context.Products.ToList();
 });
+
+await app.Services.MigrateAndSeedAsync();
+
 app.Run();
