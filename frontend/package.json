@@ -4,8 +4,8 @@
   "description": "Vanilla JS frontend for E-Shop project",
   "type": "module",
   "scripts": {
-    "dev": "parcel index.html --port 5173",
-    "build": "parcel build index.html --dist-dir dist --public-url ./",
+    "dev": "parcel src/html/index.html src/html/cart.html src/html/product.html --port 5173",
+    "build": "parcel build src/html/index.html src/html/cart.html src/html/product.html --dist-dir dist --public-url ./",
     "clean": "rimraf .parcel-cache dist",
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
     "lint": "eslint ./src --ext .js && stylelint \"**/*.css\""

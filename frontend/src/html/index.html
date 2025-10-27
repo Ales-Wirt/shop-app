@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Catalog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="../styles.css" />
+    <script type="module" defer src="../js/catalog.js"></script>
+    <script type="module" defer src="../js/header.js"></script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner container">
+        <a class="logo" href="./index.html">MyShop</a>
+        <button class="cart-btn">🛒 <span class="badge">0</span></button>
+        <div class="minicart">
+          <div class="list"></div>
+          <div class="footer">
+            <a href="./cart.html" class="btn primary goto" style="width: 100%"
+              >Go to cart</a
+            >
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="filters">
+        <div class="block">
+          <div class="muted" style="margin-bottom: 8px">Categories</div>
+          <div id="catList" class="checkbox-list"></div>
+        </div>
+        <div class="block" style="min-width: 260px">
+          <div class="muted" style="margin-bottom: 8px">Price</div>
+          <div class="input-inline">
+            <input
+              id="minPrice"
+              class="input"
+              type="number"
+              min="0"
+              placeholder="Min"
+            />
+            <input
+              id="maxPrice"
+              class="input"
+              type="number"
+              min="0"
+              placeholder="Max"
+            />
+          </div>
+        </div>
+        <div class="block" style="min-width: 260px">
+          <div class="muted" style="margin-bottom: 8px">Sort by</div>
+          <select id="sort" class="select">
+            <option value="NameAsc">Name A→Z</option>
+            <option value="NameDesc">Name Z→A</option>
+            <option value="PriceAsc">Price ↑</option>
+            <option value="PriceDesc">Price ↓</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="listArea"></div>
+    </main>
+  </body>
+</html>

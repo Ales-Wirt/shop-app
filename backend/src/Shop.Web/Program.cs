@@ -12,6 +12,17 @@ using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy("Frontend", policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 var vaultUri = builder.Configuration["KeyVault_VaultUri"];
 
 if(!string.IsNullOrEmpty(vaultUri))

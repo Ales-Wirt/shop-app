@@ -1,3 +1,16 @@
+# --- Parcel build cache ---
+.parcel-cache/
+
+# --- Node dependencies ---
+node_modules/
+
+# --- Parcel build output ---
+dist/
+
+# --- Environment files ---
+.env
+.env.*
+
 # .NET
 bin/
 obj/
@@ -17,3 +30,7 @@ coverage/
 .DS_Store
 Thumbs.db
 .vscode/
+
+# --- Ignore package.json and lock file (if managed externally) ---
+package.json
+package-lock.json
