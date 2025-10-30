@@ -1,5 +1,5 @@
-import { Cart } from "./cart";
-import { fmt } from "./utils";
+import { Cart } from "./cart.js";
+import { fmt } from "./utils.js";
 
 export function initHeader() {
   const header = document.querySelector(".header");

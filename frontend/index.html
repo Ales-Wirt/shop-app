@@ -2,22 +2,20 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Product</title>
+    <title>MyShop</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="../styles.css" />
-
-    <script type="module" defer src="../pages/product-page.js"></script>
-    <script type="module" defer src="../js/header.js"></script>
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" defer src="./src/js/main.js"></script>
   </head>
   <body>
     <header class="header">
       <div class="header-inner container">
-        <a class="logo" href="./index.html">MyShop</a>
+        <a class="logo" href="#/">MyShop</a>
         <button class="cart-btn">🛒 <span class="badge">0</span></button>
         <div class="minicart">
           <div class="list"></div>
           <div class="footer">
-            <a href="./cart.html" class="btn primary goto" style="width: 100%"
+            <a href="#/cart" class="btn primary goto" style="width: 100%"
               >Go to cart</a
             >
           </div>
@@ -25,6 +23,6 @@
       </div>
     </header>
 
-    <main class="container" id="content"></main>
+    <main id="app" class="container"></main>
   </body>
 </html>

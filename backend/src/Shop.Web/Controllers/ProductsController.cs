@@ -10,7 +10,15 @@ namespace Shop.Web.Controllers
     [Route("api/[controller]")]
     public class ProductsController(IShopUnitOfWork uow, IBlobUrlGenerator blob) : ControllerBase
     {
-        [HttpGet]
+        [HttpGet("say-hello", Name = "SayHelloToMyLittleFriendRoute")]
+        public async Task<ActionResult> SayHelloToMyLittleFriend()
+        {
+            Console.WriteLine("Calling this method from the client!");
+
+            return Ok(new { Response = "You wanna play rough? Ok!"});
+        }
+
+        [HttpGet()]
         public async Task<ActionResult<PagedResult<ProductListItemDto>>> GetProducts(
         [FromQuery] string? q,
         [FromQuery] string[]? categorySlugs,
@@ -51,7 +59,7 @@ namespace Shop.Web.Controllers
             });
         }
 
-        [HttpGet("{idOrSlug}")]
+        [HttpGet("product/{idOrSlug}")]
         public async Task<ActionResult<ProductDetailsDto>> GetProduct(string idOrSlug, CancellationToken ct)
         {
             var prod = Guid.TryParse(idOrSlug, out var id)

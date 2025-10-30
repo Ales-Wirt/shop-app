@@ -1,23 +1,17 @@
-import { Api } from "../js/api";
-import { Cart } from "../js/cart";
-import { toast } from "../js/toast";
-import { fmt, qs, spinner } from "../js/utils";
-import { initHeader } from "../js/header";
+import { Api } from "../api.js";
+import { Cart } from "../cart.js";
+import { toast } from "../toast.js";
+import { fmt, qs, spinner } from "../utils.js";
 
-initHeader();
+export function renderProduct(idOrSlug) {
+  const app = qs("#app");
+  app.innerHTML = "";
+  app.appendChild(spinner(420));
 
-const content = qs("#content");
-const params = new URLSearchParams(location.search);
-const id = params.get("id") || params.get("slug") || "";
-
-if (!id) {
-  content.innerHTML = `<div class="empty">Product not found. <a class="btn link" href="./index.html">Back to catalog</a></div>`;
-} else {
-  content.appendChild(spinner(420));
-  Api.getProduct(id)
+  Api.getProduct(idOrSlug)
     .then((p) => {
-      content.innerHTML = `
-      <a class="btn link" href="./index.html">← Back to catalog</a>
+      app.innerHTML = `
+      <a class="btn link" href="#/">← Back to catalog</a>
       <div class="product" style="margin-top:12px">
         <div class="gallery">
           <div class="gallery-main"><img id="mainImg" src="${
@@ -44,8 +38,8 @@ if (!id) {
         </div>
       </div>`;
 
-      const thumbs = qs("#thumbs");
-      const mainImg = qs("#mainImg");
+      const thumbs = qs("#thumbs", app);
+      const mainImg = qs("#mainImg", app);
       p.images.forEach((img, i) => {
         const t = document.createElement("img");
         t.src = img.url;
@@ -59,7 +53,7 @@ if (!id) {
         thumbs.appendChild(t);
       });
 
-      qs("#add")?.addEventListener("click", () => {
+      qs("#add", app)?.addEventListener("click", () => {
         Cart.upsert({
           productId: p.id,
           qty: 1,
@@ -71,6 +65,6 @@ if (!id) {
       });
     })
     .catch(() => {
-      content.innerHTML = `<div class="empty">Product not found. <a class="btn link" href="./index.html">Back to catalog</a></div>`;
+      app.innerHTML = `<div class="empty">Product not found. <a class="btn link" href="#/">Back to catalog</a></div>`;
     });
 }

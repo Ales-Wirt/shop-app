@@ -2,17 +2,18 @@ using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
 using Microsoft.EntityFrameworkCore;
+using Shop.Repositories.Repositories.Interfaces;
 using Shop.Repositories.UnitsOfWork.Interfaces;
 using Shop.Web;
 using Shop.Web.Options;
 using Shop.Web.Services;
-using System;
+using Microsoft.Extensions.Azure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+
 builder.Services.AddCors(opt =>
 {
     opt.AddPolicy("Frontend", policy =>
@@ -20,6 +21,8 @@ builder.Services.AddCors(opt =>
         policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod();
+
+        //policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
     });
 });
 
@@ -58,26 +61,25 @@ builder.Services.AddSingleton<IBlobUrlGenerator, AzureBlobService>();
 builder.Services.AddTransient<DataSeeder>();
 
 
-//string containerName = "shopimagesblob";
-
-//BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-
-//bool exists = await containerClient.ExistsAsync();
-
-//if(!exists)
-//{
-//    await blobServiceClient.CreateBlobContainerAsync(containerName);
-//}
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddOpenApi();
-builder.Services.AddSwaggerGen();
 
 if (builder.Environment.IsDevelopment())
     builder.Services.AddDbContextFactory<ShopDbContext>(opt => opt.UseSqlServer(connectinoString));
 else
     builder.Services.AddDbContext<ShopDbContext>(opt => opt.UseSqlServer(connectinoString));
+
+builder.Services.AddScoped<IProductRepository, Shop.Repositories.Repositories.ProductRepository>();
+builder.Services.AddScoped<ICategoryRepository, Shop.Repositories.Repositories.CategoryRepository>();
+builder.Services.AddScoped<IOrderRepository, Shop.Repositories.Repositories.OrderRepository>();
+
+builder.Services.AddScoped<IShopUnitOfWork, Shop.Repositories.UnitsOfWork.ShopUnitOfWork>();
+//builder.Services.AddAzureClients(clientBuilder =>
+//{
+//    clientBuilder.AddBlobServiceClient(builder.Configuration["StorageConnection:blobServiceUri"]!).WithName("StorageConnection");
+//    clientBuilder.AddQueueServiceClient(builder.Configuration["StorageConnection:queueServiceUri"]!).WithName("StorageConnection");
+//    clientBuilder.AddTableServiceClient(builder.Configuration["StorageConnection:tableServiceUri"]!).WithName("StorageConnection");
+//});
 
 var app = builder.Build();
 
@@ -89,24 +91,19 @@ if (app.Environment.IsDevelopment())
         await using var db = await factory.CreateDbContextAsync();
         await db.Database.MigrateAsync();
     }
-
-    app.MapOpenApi();
-
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/openapi/v1.json", "v1");
-    });
 }
 
 
 app.UseHttpsRedirection();
+app.UseCors("Frontend");
+app.UseRouting();
+app.MapControllers();
 app.MapGet("/", () => "E-shop API running");
 app.MapGet("/products", (ShopDbContext context) =>
 {
-    
     return context.Products.ToList();
 });
 
-await app.Services.MigrateAndSeedAsync();
+//await app.Services.MigrateAndSeedAsync();
 
 app.Run();

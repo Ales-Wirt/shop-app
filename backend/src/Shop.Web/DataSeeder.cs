@@ -12,7 +12,7 @@ namespace Shop.Web;
 public sealed class DataSeeder(
     ShopDbContext db,
     BlobServiceClient blobClient,
-    IOptions<ShopOptions> optionsAccessor)   // ← вместо ShopOptions
+    IOptions<ShopOptions> optionsAccessor)
 {
     private readonly ShopDbContext _db = db;
     private readonly BlobServiceClient _blob = blobClient;

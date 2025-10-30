@@ -7,5 +7,7 @@ namespace Shop.Repositories.Repositories.Interfaces
         Task<(IReadOnlyList<Product> Items, int Total)> SearchAsync(ProductQuery query, CancellationToken cancellationToken);
         Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
         Task<Product?> GetBySlugAsync(string slug, CancellationToken cancellationToken);
+
+        Task<Dictionary<Guid, Product>> GetByIdsAsync(Guid[] ids, CancellationToken cancellationToken);
     }
 }

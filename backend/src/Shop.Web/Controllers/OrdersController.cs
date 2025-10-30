@@ -4,13 +4,14 @@ using Shop.Web.Options;
 using Shop.Domain.Entities;
 using Shop.Web.Dto.Order;
 using Shop.Web.Services;
+using Shop.Repositories.UnitsOfWork.Interfaces;
 
 namespace Shop.Web.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public sealed class OrdersController(
-        ShopDbContext db,
+        IShopUnitOfWork uow,
         IOrderNumberGenerator num,
         Microsoft.Extensions.Options.IOptions<ShopOptions> opt)
         : ControllerBase
@@ -24,9 +25,7 @@ namespace Shop.Web.Controllers
             if (!ModelState.IsValid) return ValidationProblem(ModelState);
 
             var ids = req.Items.Select(i => i.ProductId).Distinct().ToArray();
-            var products = await db.Products
-                .Where(p => ids.Contains(p.Id))
-                .ToDictionaryAsync(p => p.Id, ct);
+            var products = await uow.Products.GetByIdsAsync(ids, ct);
 
             if (products.Count != ids.Length)
                 return BadRequest("Some products do not exist.");
@@ -68,11 +67,10 @@ namespace Shop.Web.Controllers
                 }).ToList()
             };
 
-            db.Orders.Add(order);
-
+            await uow.Orders.AddAsync(order, ct);
             try
             {
-                await db.SaveChangesAsync(ct);
+                await uow.SaveChangesAsync(ct);
             }
             catch (DbUpdateException ex)
             {
@@ -91,15 +89,32 @@ namespace Shop.Web.Controllers
         [HttpGet("{orderNumber}")]
         public async Task<ActionResult<OrderCreatedDto>> GetByNumber(string orderNumber, CancellationToken ct)
         {
-            var o = await db.Orders.AsNoTracking().FirstOrDefaultAsync(x => x.OrderNumber == orderNumber, ct);
-            if (o is null) return NotFound();
-
-            return Ok(new OrderCreatedDto
+            Console.WriteLine($"TAKING ORDER: {orderNumber}");
+            try
             {
-                OrderNumber = o.OrderNumber,
-                TotalCost = o.TotalCost,
-                Status = o.Status
-            });
+                var o = await uow.Orders.GetByOrderNumberAsync(orderNumber, ct);
+                if (o is null) return NotFound();
+
+                return Ok(new OrderCreatedDto
+                {
+                    OrderNumber = o.OrderNumber,
+                    TotalCost = o.TotalCost,
+                    Status = o.Status
+                });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return BadRequest(new
+                {
+                    ExceptionMessage = e.Message,
+                });
+            }
+            finally
+            {
+                Console.WriteLine("<<<<<<< GetByNumber method was completed >>>>>>>");
+            }
+            
         }
     }
 }

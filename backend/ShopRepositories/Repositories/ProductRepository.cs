@@ -4,7 +4,7 @@ using Shop.Repositories.Repositories.Interfaces;
 
 namespace Shop.Repositories.Repositories
 {
-    internal class ProductRepository(ShopDbContext db) : IProductRepository
+    public class ProductRepository(ShopDbContext db) : IProductRepository
     {
         public async Task<(IReadOnlyList<Product> Items, int Total)> SearchAsync(ProductQuery q, CancellationToken ct)
         {
@@ -53,5 +53,10 @@ namespace Shop.Repositories.Repositories
             db.Products.AsNoTracking()
                 .Include(p => p.Images).Include(p => p.Categories)
                 .FirstOrDefaultAsync(p => p.Slug == slug, ct);
+
+        public Task<Dictionary<Guid, Product>> GetByIdsAsync(Guid[] ids, CancellationToken ct) =>
+            db.Products.AsNoTracking()
+                .Where(p => ids.Contains(p.Id))
+                .ToDictionaryAsync(p => p.Id, ct);
     }
 }

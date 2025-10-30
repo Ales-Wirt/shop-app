@@ -7,16 +7,21 @@ namespace Shop.Repositories.UnitsOfWork
     public class ShopUnitOfWork : IShopUnitOfWork, IAsyncDisposable
     {
         private readonly ShopDbContext _db;
+
         public IProductRepository Products { get; }
         public ICategoryRepository Categories { get; }
         public IOrderRepository Orders { get; }
 
-        public ShopUnitOfWork(ShopDbContext db)
+        public ShopUnitOfWork(
+            ShopDbContext db,
+            IProductRepository products,
+            ICategoryRepository categories,
+            IOrderRepository orders)
         {
             _db = db;
-            Products = new ProductRepository(db);
-            Categories = new CategoryRepository(db);
-            Orders = new OrderRepository(db);
+            Products = products;
+            Categories = categories;
+            Orders = orders;
         }
 
         public Task<int> SaveChangesAsync(CancellationToken ct) => _db.SaveChangesAsync(ct);

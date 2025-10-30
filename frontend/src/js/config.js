@@ -1,1 +1,2 @@
-export const API_BASE = "http://localhost:5028";
+export const API_BASE =
+  "https://shop-api-app-bpbabagth9bmfycu.germanywestcentral-01.azurewebsites.net";

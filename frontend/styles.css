@@ -34,12 +34,12 @@ select,
 button {
   font: inherit;
 }
-
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 16px;
 }
+
 .header {
   position: sticky;
   top: 0;
@@ -60,9 +60,6 @@ button {
 }
 .cart-btn {
   position: relative;
-  display: flex;
-  align-items: center;
-  gap: 8px;
   background: transparent;
   color: var(--text);
 }
@@ -115,9 +112,6 @@ button {
   gap: 12px;
   align-items: center;
   flex-wrap: wrap;
-}
-.row > * {
-  flex: 0 0 auto;
 }
 
 .btn {
@@ -299,23 +293,6 @@ button {
 .summary .total {
   font-weight: 800;
   font-size: 18px;
-}
-
-.form {
-  display: grid;
-  gap: 12px;
-  margin-top: 16px;
-}
-.field {
-  display: grid;
-  gap: 6px;
-}
-.field input {
-  padding: 10px;
-}
-.error-text {
-  color: #ffb4b4;
-  font-size: 12px;
 }
 
 .toast {
